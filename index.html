@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-		<title>开发票</title>
+		<title>开票助手</title>
 		<link rel="stylesheet" href="css/weui.min.css" />
 		<link rel="stylesheet" href="css/style.css" />
 		<script type="text/javascript" src="js/jquery-3.2.1.min.js" ></script>
@@ -11,55 +11,118 @@
 		<script type="text/javascript" src="js/index.js" ></script>
 	</head>
 	<body>
-		<div class="hide" id="index">
+		<div class="hide" id="list">
+			<div id="titles"></div>
+			<div class="weui-cell border-none" style="margin-top: .5em;">
+	        	<div class="weui-cell__bd">
+	        		<a href="javascript:;" class="weui-btn weui-btn_primary" onclick="add()">添加抬头</a>
+	        	</div>
+	        </div>
+		</div>
+		<div class="hide" id="edit">
+			<input class="input-id" type="hidden" />
+			<input class="input-type" type="hidden" value="0"/>
 			<div class="weui-cells weui-cells_form">
+	            <div class="weui-cell">
+	                <div class="weui-cell__bd">
+	                	<div class="inline-block" id="type0" onclick="triggerType(this, 0)"><i class="checkbox checked"></i>增专票</div>
+	                	<div class="inline-block" style="width: 1em;"></div>
+	                	<div class="inline-block" id="type1" onclick="triggerType(this, 1)"><i class="checkbox"></i>增普票</div>
+	                </div>
+	            </div>
 	            <div class="weui-cell">
 	                <div class="weui-cell__hd"><label class="weui-label">名称</label></div>
 	                <div class="weui-cell__bd">
-	                    <input class="weui-input" id="name" placeholder="填写准确的抬头名称">
+	                    <input class="weui-input input-name" placeholder="填写准确的抬头名称">
 	                </div>
 	            </div>
+	            <div class="weui-cell weui-cell_switch">
+	                <div class="weui-cell__bd">默认抬头</div>
+	                <div class="weui-cell__ft">
+	                    <input class="weui-switch input-isdefault" type="checkbox" >
+	                </div>
+	            </div>
+	        </div>
+	        <div class="weui-cells weui-cells_form">
 	            <div class="weui-cell">
 	                <div class="weui-cell__hd"><label class="weui-label">税号</label></div>
 	                <div class="weui-cell__bd">
-	                    <input class="weui-input" id="duty" placeholder="输入纳税人识别号">
+	                    <input class="weui-input input-duty" placeholder="输入纳税人识别号">
 	                </div>
 	            </div>
-	            <div class="weui-cell">
+	            <div class="weui-cell type-0">
 	                <div class="weui-cell__hd"><label class="weui-label">单位地址</label></div>
 	                <div class="weui-cell__bd">
-	                    <input class="weui-input" id="address" placeholder="收票单位注册地址">
+	                    <input class="weui-input input-address" placeholder="收票单位注册地址">
 	                </div>
 	            </div>
-	            <div class="weui-cell">
+	            <div class="weui-cell type-0">
 	                <div class="weui-cell__hd"><label class="weui-label">电话号码</label></div>
 	                <div class="weui-cell__bd">
-	                    <input class="weui-input" id="phone" placeholder="输入公司电话号码">
+	                    <input class="weui-input input-phone" placeholder="输入公司电话号码">
 	                </div>
 	            </div>
-	            <div class="weui-cell">
+	            <div class="weui-cell type-0">
 	                <div class="weui-cell__hd"><label class="weui-label">开户银行</label></div>
 	                <div class="weui-cell__bd">
-	                    <input class="weui-input" id="bank" placeholder="收票单位开户银行">
+	                    <input class="weui-input input-bank" placeholder="收票单位开户银行">
 	                </div>
 	            </div>
-	            <div class="weui-cell">
+	            <div class="weui-cell type-0">
 	                <div class="weui-cell__hd"><label class="weui-label">银行账号</label></div>
 	                <div class="weui-cell__bd">
-	                    <input class="weui-input" id="account" placeholder="收票单位银行账号">
+	                    <input class="weui-input input-account" placeholder="收票单位银行账号">
 	                </div>
 	            </div>
+	            <div class="weui-cell type-0 border-none">
+	                <div class="weui-cell__bd" style="text-align: center;color: red;font-size: .8em;">建议全部填写，以便开具增值税专用发票</div>
+	            </div>
 	        </div>
-	        <div class="weui-cells">
-	        	<div class="weui-cell">
-	        		<div class="weui-cell__bd">
-	        			<a href="javascript:;" class="weui-btn weui-btn_primary" onclick="makeCode()">生成二维码</a>
-	        		</div>
+	        <div class="weui-cells prompt">
+	        	<p>温馨提示：</p>
+	        	<p>1.增专票：为增值税“专用”发票</p>
+	        	<p>2.增普票：为增值税“普通”发票</p>
+	        </div>
+	        <div class="weui-cell">
+	        	<div class="weui-cell__bd">
+	        		<a href="javascript:;" class="weui-btn weui-btn_primary">保存</a>
 	        	</div>
 	        </div>
-        </div>
-        <div class="page hide" id="code">
-        	<div id="qrcode"></div>
-        </div>
+	    </div>
+		<div class="hide" id="detail">
+			<div class="weui-cells weui-cells_form">
+	            <div class="weui-cell">
+	                <div class="weui-cell__hd"><label class="weui-label">名称</label></div>
+	                <div class="weui-cell__bd input-value input-name"></div>
+	            </div>
+	            <div class="weui-cell">
+	                <div class="weui-cell__hd"><label class="weui-label">类型</label></div>
+	                <div class="weui-cell__bd input-value input-type"></div>
+	            </div>
+	        </div>
+	        <div class="weui-cells weui-cells_form">
+	            <div class="weui-cell">
+	                <div class="weui-cell__hd"><label class="weui-label">税号</label></div>
+	                <div class="weui-cell__bd input-value input-duty"></div>
+	            </div>
+	            <div class="weui-cell type-0">
+	                <div class="weui-cell__hd"><label class="weui-label">单位地址</label></div>
+	                <div class="weui-cell__bd input-value input-address"></div>
+	            </div>
+	            <div class="weui-cell type-0">
+	                <div class="weui-cell__hd"><label class="weui-label">电话号码</label></div>
+	                <div class="weui-cell__bd input-value input-phone"></div>
+	            </div>
+	            <div class="weui-cell type-0">
+	                <div class="weui-cell__hd"><label class="weui-label">开户银行</label></div>
+	                <div class="weui-cell__bd input-value input-bank"></div>
+	            </div>
+	            <div class="weui-cell type-0">
+	                <div class="weui-cell__hd"><label class="weui-label">银行账号</label></div>
+	                <div class="weui-cell__bd input-value input-account"></div>
+	            </div>
+	        </div>
+	        <div id="qrcode"></div>
+	    </div>
 	</body>
 </html>
