@@ -1,5 +1,6 @@
 window.onhashchange = switchHash;
 $(function() {
+	sessionStorage.setItem(Key.OpenID, 'oYZ5SwTF1CwsvmGKLNysF_Wi8tDg')
 	isOAuth();
 	switchHash();
 });
@@ -55,6 +56,7 @@ function getQueryString(name) {
 }
 function switchHash() {
 	hideAllPage();
+	hideFull();
 	let id = location.hash || '#list';
 	$(id).show();
 	document.title = Hashs[id]['title'];
@@ -67,10 +69,9 @@ function hideAllPage() {
 }
 function makeCode(item) {
 	$('#qrcode').empty();
-	let text = String.fromCharCode(0xFEFF) + '11' + item['name'] + '→2'
-		+ item['duty'] + '→3'
-		+ item['address'] + ' ' + item['phone'] + '→4'
-		+ item['bank'] + ' ' + item['account'] + '→';
+	let text = String.fromCharCode(0xFEFF) + '11' + item['name'] + '→2' + item['duty']
+		+ (item['type'] == 0 ? '→3'+item['address']+' '+item['phone']+'→4'+item['bank']+' '+item['account'] : '') + '→';
+	console.log(text);
 	text = utf16to8(text);
 	$('#qrcode').qrcode({
 		text: text,
@@ -78,7 +79,18 @@ function makeCode(item) {
 	});
 	let $canvas = document.getElementsByTagName('canvas')[0],
 		dataUrl = $canvas.toDataURL();
-	$('#qrcode').html('<img src="'+dataUrl+'"/>');
+	$('#qrcode').html('<img src="'+dataUrl+'" onclick="showFull()"/>');
+	$('.weui-gallery__img').css({
+		'background-image': 'url("' + dataUrl + '")',
+		'background-color': '#fff',
+		'bottom': '0'
+	});
+}
+function showFull() {
+	$('.weui-gallery').show();
+}
+function hideFull() {
+	$('.weui-gallery').hide();
 }
 function utf16to8(str) {
 	let out, i, len, c;
