@@ -1,6 +1,5 @@
 window.onhashchange = switchHash;
 $(function() {
-	sessionStorage.setItem(Key.OpenID, 'oYZ5SwTF1CwsvmGKLNysF_Wi8tDg')
 	isOAuth();
 	switchHash();
 });
@@ -21,6 +20,7 @@ Key = {
 	'AppID': 'wxc59832dca9acf662'
 },
 Fields = ['input-id', 'input-name', 'input-duty', 'input-address', 'input-phone', 'input-bank', 'input-account'];
+//let openId;
 function isOAuth() {
 	let openId = sessionStorage.getItem(Key.OpenID);
 	let code = getQueryString('code');
@@ -35,15 +35,17 @@ function isOAuth() {
 				dataType: 'JSON',
 				success: function(data) {
 					sessionStorage.setItem(Key.OpenID, data['openId']);
-					history.go(-1);
+					location.href = 'http://fapiao.vancode.cn/'
+					//openId = data['openId'];
+					//loadTitles();
 				}
 			});
 			return;
 		}
-		let url = decodeURI(location.href);
+		let url = encodeURIComponent('http://fapiao.vancode.cn/');
 		url = 'https://open.weixin.qq.com/connect/oauth2/authorize'
 			+ '?appid=' + Key.AppID + '&redirect_uri=' + url
-			+ '&response_type=code&scope=snsapi_base&state=jyt#wechat_redirect';
+			+ '&response_type=code&scope=snsapi_base&state=fp#wechat_redirect';
 		location.href = url;
 	}
 }
@@ -81,9 +83,11 @@ function makeCode(item) {
 		dataUrl = $canvas.toDataURL();
 	$('#qrcode').html('<img src="'+dataUrl+'" onclick="showFull()"/>');
 	$('.weui-gallery__img').css({
+		'bottom': '0',
+		'padding': '12.5%',
 		'background-image': 'url("' + dataUrl + '")',
 		'background-color': '#fff',
-		'bottom': '0'
+		'background-origin': 'content-box',
 	});
 }
 function showFull() {
@@ -112,12 +116,14 @@ function utf16to8(str) {
 	return out;
 }
 function loadTitles() {
+	let openId = sessionStorage.getItem(Key.OpenID);
+	if (!openId) {
+		return;
+	}
 	$.ajax({
 		url: 'service/invoiceTitle/get',
 		method: 'POST',
-		data: {
-			openid: sessionStorage.getItem(Key.OpenID)
-		},
+		data: {openid: openId},
 		dataType: 'JSON',
 		success: function(list) {
 			appendTitleHtml(list);
@@ -257,6 +263,7 @@ function update() {
 		method: 'POST',
 		data: {
 			openid: sessionStorage.getItem(Key.OpenID),
+			//openid: openId,
 			id, type, name, isdefault, duty, address, phone, bank, account
 		},
 		dataType: 'JSON',
